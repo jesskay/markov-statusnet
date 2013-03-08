@@ -10,5 +10,5 @@ def make_ngrams(orig_source, n=2, end_marker=None):
         else:
             source.append(end_marker)
 
-    for i in range(0, len(source) - (n - 1)):
-        yield source[i:i+n]
+    for i in range(0, len(source) - n):
+        yield source[i:i+n+1]

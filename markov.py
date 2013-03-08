@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-import requests, sys
+import requests, sys, pickle
+
 
 def split_uri(target_uri):
     """Splits a URI of the format [acct:]username@host into its components."""
@@ -8,7 +9,8 @@ def split_uri(target_uri):
     username, host = target_uri.split("@")
     return (username, host)
 
-def get_notices(username, host, use_https=False):
+
+def fetch_notices(username, host, use_https=False):
     """Fetches all notices for a given user at a given host."""
     last_id = 0
     notices = {}
@@ -37,7 +39,28 @@ def get_notices(username, host, use_https=False):
         if last_id == 1:
             break  # Just fetched id 1. Done either way.
 
-    return notices.values()
+    return list(notices.values())
+
+
+def get_notices(username, host, use_https=False, force_fetch=False):
+    if not force_fetch:
+        try:
+            with open("{0}/{1}.picklejar".format(host, username), "rb") as picklejar:
+                return pickle.load(picklejar)
+        except IOError:  # file bad or nonexistent
+            pass         # so we'll fetch
+
+    notices = fetch_notices(username, host, use_https)
+
+    try:
+        with open("{0}/{1}.picklejar".format(host, username), "wb") as picklejar:
+            pickle.dump(notices, picklejar)
+    except IOError:
+        sys.stderr.write("WARNING: Couldn't pickle notices. The script will " +
+                "still work, but this will result in inefficient operation.")
+
+    return notices
+
 
 # TODO: turn the list of notices into a markov table
 # TODO: generate stuff based on the table

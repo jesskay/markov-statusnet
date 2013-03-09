@@ -7,18 +7,28 @@ def fetch_notices(username, host, use_https=False):
     last_id = 0
     notices = {}
     while True:
-        new_notices = requests.get("{protocol}://{host}/api/statuses/user_timeline.json".format(
-                protocol="https" if use_https else "http",
-                host=host),
-            params={
-                "screen_name": username,
-                "max_id": str(last_id - 1)
-                })
+        try:
+            new_notices = requests.get("{protocol}://{host}/api/statuses/user_timeline.json".format(
+                    protocol="https" if use_https else "http",
+                    host=host),
+                params={
+                    "screen_name": username,
+                    "max_id": str(last_id - 1)
+                    })
+        except requests.exceptions.ConnectionError:
+            sys.stderr.write("GET failed with a connection error. Aborting " +
+                    "prematurely.\n")
+            break
 
         if new_notices.status_code == 200:
             new_notice_data = new_notices.json()
+        elif (new_notices.status_code >= 400) and (new_notices.status_code <
+                500):
+            sys.stderr.write("GET failed with a 4xx error. Aborting " +
+                    "prematurely.\n")
+            break
         else:
-            sys.stderr.write("GET failed. If you're seeing this a lot, something may be wrong.")
+            sys.stderr.write("GET failed. If you're seeing this a lot, something may be wrong.\n")
             continue
 
         if new_notice_data == []:
@@ -52,7 +62,8 @@ def get_notices(username, host, use_https=False, force_fetch=False):
         with open("{0}/{1}.picklejar".format(host, username), "wb") as picklejar:
             pickle.dump(notices, picklejar)
     except IOError:
-        sys.stderr.write("WARNING: Couldn't pickle notices. The script will " +
-                "still work, but this will result in inefficient operation.")
+        sys.stderr.write("WARNING: Couldn't pickle notices. The script will" +
+                " most likely still work, but this may result in inefficient" +
+                " operation.\n")
 
     return notices

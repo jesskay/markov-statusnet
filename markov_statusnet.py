@@ -15,8 +15,6 @@ def split_uri(target_uri):
     return (username, host)
 
 
-# TODO: turn the list of notices into a markov table
-# TODO: generate stuff based on the table
 def main():
     arg_parser = argparse.ArgumentParser(description="""Generate nonsense based
             on a StatusNet user's notices.""")

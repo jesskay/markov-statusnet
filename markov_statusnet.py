@@ -56,7 +56,12 @@ def main():
                     user_markov_table)
 
         for i in range(0, args.nonsense_count):
-            print(" ".join(markov.generate_output(user_markov_table, **markers)))
+            while True:
+                nonsense = " ".join(markov.generate_output(user_markov_table,
+                    **markers))
+                if not nonsense in user_notices:
+                    break
+            print(nonsense)
 
 
 if __name__ == "__main__":

@@ -1,8 +1,10 @@
 #!/usr/bin/env python
+"""Functions for making markov tables and generating output from them."""
 import random
 
 
 def make_ngrams(orig_source, n=2, start_marker=None, end_marker=None):
+    """Turn a source list or string into a list of n-grams."""
     source = orig_source[:]  # Don't want to modify original if given a reference
 
     if start_marker is not None:
@@ -22,6 +24,7 @@ def make_ngrams(orig_source, n=2, start_marker=None, end_marker=None):
 
 
 def make_markov_table(ngrams, preset_table={}):
+    """Generate or update a markov table based on a list of n-grams."""
     markov_table = preset_table
 
     for ngram in ngrams:
@@ -39,6 +42,7 @@ def make_markov_table(ngrams, preset_table={}):
 
 def generate_output(markov_table, start_marker=None, end_marker=None,
         max_length=0):
+    """Generate output from a markov table."""
     keys = list(markov_table.keys())
     ngram_size = len(keys[0])
     source_is_string = isinstance(list(markov_table.keys())[0], str)

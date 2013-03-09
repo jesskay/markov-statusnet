@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+"""Functions for getting Status.Net users' notices."""
 import requests, os, sys, pickle
 
 
@@ -45,6 +46,8 @@ def fetch_notices(username, host, use_https=False):
 
 
 def get_notices(username, host, use_https=False, force_fetch=False):
+    """Gets all notices for a given user at a given host. Will attempt to read
+ from cache if possible, otherwise pass through to fetch_notices."""
     if not force_fetch:
         try:
             with open("{0}/{1}.picklejar".format(host, username), "rb") as picklejar:

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-import requests, sys, pickle
+import requests, os, sys, pickle
 
 
 def fetch_notices(username, host, use_https=False):
@@ -44,6 +44,10 @@ def get_notices(username, host, use_https=False, force_fetch=False):
 
     notices = fetch_notices(username, host, use_https)
 
+    try:
+        os.mkdir(host)
+    except OSError:
+        pass  # Directory already exists, don't care.
     try:
         with open("{0}/{1}.picklejar".format(host, username), "wb") as picklejar:
             pickle.dump(notices, picklejar)
